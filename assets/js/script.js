@@ -14,6 +14,13 @@ var weatherHandler = function () {
                 cityWeatherSpecsEl.append(cityHumidityEl)
                 var cityWindSpeedEl = $("<h3>").text(`Wind Speed: ${result.list[0].wind.speed}`);
                 cityWeatherSpecsEl.append(cityWindSpeedEl);
+                console.log(result.list[0].dt_txt);
+                var weatherDate = $("<h2>").text(moment(result.list[0].dt_txt).format("L"));
+                var weatherImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[0].weather[0].icon}.png`);
+                var cityNameEl = $("#cityName");
+                cityNameEl.append(weatherDate);
+                cityNameEl.append(weatherImg);
+
                 var fiveDay = $("#5-day").addClass("container")
                 var row = $("<div>").addClass("row");
                 fiveDay.append(row);
@@ -49,7 +56,7 @@ $("#submit").click(function () {
     var searchTerm = $("#search").val();
     var historyEl = $("#history");
     var cityEl = $("#city")
-    var cityNameEl = $("<h2>").text(searchTerm);
+    var cityNameEl = $("<h2>").text(searchTerm).attr("id", "cityName");
     cityEl.append(cityNameEl);
     var cityWeatherSpecsEl = $("<div>");
     cityWeatherSpecsEl.attr("id", "cityWeatherSpecsEl");
