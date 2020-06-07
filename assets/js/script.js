@@ -10,32 +10,29 @@ var weatherHandler = function () {
                 var cityWeatherSpecsEl = $("#cityWeatherSpecsEl");
                 var cityTempEl = $("<h3>").text(`Temp: ${result.list[0].main.temp}`);
                 cityWeatherSpecsEl.append(cityTempEl);
-                console.log(cityWeatherSpecsEl.html())
                 var cityHumidityEl = $("<h3>").text(`Humidity: ${result.list[0].main.humidity}`);
                 cityWeatherSpecsEl.append(cityHumidityEl)
                 var cityWindSpeedEl = $("<h3>").text(`Wind Speed: ${result.list[0].wind.speed}`);
                 cityWeatherSpecsEl.append(cityWindSpeedEl);
-            })
-        };
+                var fiveDay = $("#5-day").addClass("container")
+                var row = $("<div>").addClass("row");
+                fiveDay.append(row);
+                for (var i = 0; i < 5; i++) {
+                    var weatherCard = $("<div>").addClass("card col-sm-2 m-1");
+                    var weatherText = $("<div>").text("some text").addClass("card-body");
+                    weatherCard.append(weatherText);
+                    row.append(weatherCard);
+                }
+                var url = `http://api.openweathermap.org/data/2.5/uvi/forecast?appid=${apiKey}&lat=${result.city.coord.lat}&lon=${result.city.coord.lon}&cnt=5`
+                fetch(url).then(function (response) {
+                    response.json().then(function(result) {
+                        var cityUvIndexEl = $("<h3>").text(`UV Index: ${result[0].value}`);
+                        cityWeatherSpecsEl.append(cityUvIndexEl);
+                    })
+                })
+            });
+        }
     })
-}
-
-var uvHandler = function () {
-    // var cityWeatherSpecsEl = $("#cityWeatherSpecsEl");
-    // var searchTerm = $("#search").val();
-    // var url = `http://api.openweathermap.org/data/2.5/uvi/forecast?appid=${apiKey}&lat=29.7633&lon=-95.3633&cnt=5`
-    // fetch(url)
-    //     .then(function (response) {
-    //         if (response.ok) {
-    //             response.json()
-    //         }
-    //     })
-    //     .then(function (response) {
-    //         var cityUvIndexEl = $("<h3>").text(`UV Index: ${response}`);
-    //         cityWeatherSpecsEl.append(cityUvIndexEl);
-    //         var cityEl = $("#city");
-    //         cityEl.append(cityWeatherSpecsEl);
-    //     })
 }
 
 // click event for search button
@@ -48,7 +45,6 @@ $("#submit").click(function () {
     var cityWeatherSpecsEl = $("<div>");
     cityWeatherSpecsEl.attr("id", "cityWeatherSpecsEl");
     cityEl.append(cityWeatherSpecsEl);
-    console.log(cityEl.html())
     if (!historyList) {
         historyList = [];
     }
@@ -61,7 +57,4 @@ $("#submit").click(function () {
     });
 
     weatherHandler();
-    uvHandler()
 });
-
-
