@@ -8,6 +8,7 @@ var weatherHandler = function () {
         if (response.ok) {
             response.json().then(function (result) {
                 var cityWeatherSpecsEl = $("#cityWeatherSpecsEl");
+                cityWeatherSpecsEl.html("");
                 var cityTempEl = $("<h3>").text(`Temp: ${result.list[0].main.temp}`);
                 cityWeatherSpecsEl.append(cityTempEl);
                 var cityHumidityEl = $("<h3>").text(`Humidity: ${result.list[0].main.humidity}`);
@@ -17,10 +18,12 @@ var weatherHandler = function () {
                 var weatherDate = $("<h2>").text(moment(result.list[0].dt_txt).format("L"));
                 var weatherImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[0].weather[0].icon}.png`);
                 var cityNameEl = $("#cityName");
+                cityNameEl.html("")
                 cityNameEl.append(weatherDate);
                 cityNameEl.append(weatherImg);
 
                 var fiveDay = $("#5-day").addClass("container")
+                fiveDay.html("")
                 var row = $("<div>").addClass("row");
                 fiveDay.append(row);
                 for (var i = 0; i < 5; i++) {
@@ -55,26 +58,54 @@ var weatherHandler = function () {
     })
 }
 
-// click event for search button
-$("#submit").click(function () {
+var historyHandler = function () {
     var searchTerm = $("#search").val();
     var historyEl = $("#history");
+    historyEl.html("")
     var cityEl = $("#city")
     var cityNameEl = $("<h2>").text(searchTerm).attr("id", "cityName");
     cityEl.append(cityNameEl);
     var cityWeatherSpecsEl = $("<div>");
     cityWeatherSpecsEl.attr("id", "cityWeatherSpecsEl");
     cityEl.append(cityWeatherSpecsEl);
+
+    historyList.forEach(city => {
+        historyCityNameEl = $("<h4>").addClass("cityHistoryItem").text(city.name);
+        historyEl.append(historyCityNameEl);
+    });
+
     if (!historyList) {
         historyList = [];
     }
-    if (!historyList.includes(searchTerm)) {
+
+    var inHistoryList = false;
+    for (i = 0; i < historyList.length; i++) {
+        if (searchTerm.toLowerCase() === historyList[i].name.toLowerCase()) {
+            inHistoryList = true
+        }
+    }
+
+    if (!inHistoryList) {
         historyList.push({ name: searchTerm });
         localStorage.setItem("historyList", JSON.stringify(historyList));
-        historyList.forEach(city => {
-            historyCityNameEl = $("<h4>").addClass("cityHistoryItem").text(city.name);
-            historyEl.append(historyCityNameEl);
-        });
+        
     }
-    weatherHandler();
+}
+
+historyHandler();
+
+// click event for search button
+$("#submit").click(function () {
+    if ($(this).val()) {
+        historyHandler();
+        weatherHandler();
+    }
+    else {
+        alert("Enter a valid city name");
+    }
 });
+
+$(".cityHistoryItem").click(function () {
+    $("#search").val($(this).text());
+    weatherHandler();
+})
