@@ -3,18 +3,18 @@ var historyList = JSON.parse(localStorage.getItem("historyList"));
 
 var weatherHandler = function () {
     var searchTerm = $("#search").val();
-    var url = `https://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&cnt=6&appid=${apiKey}`;
+    var url = `https://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&cnt=6&appid=${apiKey}&units=imperial`;
     fetch(url).then(function (response) {
         if (response.ok) {
             response.json().then(function (result) {
                 historyHandler();
                 var cityWeatherSpecsEl = $("#cityWeatherSpecsEl");
                 cityWeatherSpecsEl.html("");
-                var cityTempEl = $("<h3>").text(`Temp: ${result.list[0].main.temp}`);
+                var cityTempEl = $("<h3>").text(`Temp: ${Math.round(result.list[0].main.temp)}\xB0F`);
                 cityWeatherSpecsEl.append(cityTempEl);
-                var cityHumidityEl = $("<h3>").text(`Humidity: ${result.list[0].main.humidity}`);
+                var cityHumidityEl = $("<h3>").text(`Humidity: ${result.list[0].main.humidity}%`);
                 cityWeatherSpecsEl.append(cityHumidityEl)
-                var cityWindSpeedEl = $("<h3>").text(`Wind Speed: ${result.list[0].wind.speed}`);
+                var cityWindSpeedEl = $("<h3>").text(`Wind Speed: ${result.list[0].wind.speed} mph`);
                 cityWeatherSpecsEl.append(cityWindSpeedEl);
                 var weatherDate = $("<h2>").text(moment(result.list[0].dt_txt).format("L"));
                 var weatherImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[0].weather[0].icon}.png`);
@@ -28,12 +28,12 @@ var weatherHandler = function () {
                 var row = $("<div>").addClass("row");
                 fiveDay.append(row);
                 for (var i = 0; i < 5; i++) {
-                    var weatherCard = $("<div>").addClass("card col-sm-2 m-1");
+                    var weatherCard = $("<div>").addClass("card m-1").attr("style", "width: 8rem");
                     var weatherCardDate = $("<div>").text(moment(result.list[i].dt_txt).format("L"));
                     var weatherCardImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[i].weather[0].icon}.png`);
-                    var weatherCardTemp = $("<div>").text(`Temp: ${result.list[i].main.temp}`);
-                    var weatherCardHumidity = $("<div>").text(`Humidity: ${result.list[i].main.humidity}`);
-                    var weatherText = $("<div>").addClass("my-2");
+                    var weatherCardTemp = $("<div>").text(`Temp: ${Math.round(result.list[i].main.temp)}\xB0F`);
+                    var weatherCardHumidity = $("<div>").text(`Humidity: ${result.list[i].main.humidity}%`);
+                    var weatherText = $("<div>").addClass("m-2");
                     weatherText.append([weatherCardDate, weatherCardImg, weatherCardTemp, weatherCardHumidity]);
                     weatherCard.append(weatherText);
                     row.append(weatherCard);
@@ -45,11 +45,17 @@ var weatherHandler = function () {
                         if (result[0].value < 3) {
                             cityUvIndexEl.addClass("bg-success");
                         }
-                        else if (result[0].value > 3 && result[0].value < 7) {
+                        else if (result[0].value > 2 && result[0].value < 6) {
                             cityUvIndexEl.addClass("bg-warning");
                         }
-                        else if (result[0].value > 6) {
+                        else if (result[0].value > 5 && result[0].value < 8) {
+                            cityUvIndexEl.addClass("bg-orange");
+                        }
+                        else if (result[0].value > 7 && result[0].value < 11) {
                             cityUvIndexEl.addClass("bg-danger");
+                        }
+                        else if (result[0].value > 11) {
+                            cityUvIndexEl.addClass("bg-purple")
                         }
                         cityWeatherSpecsEl.append(cityUvIndexEl);
                     })
