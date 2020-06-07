@@ -18,10 +18,10 @@ var weatherHandler = function () {
                 cityWeatherSpecsEl.append(cityWindSpeedEl);
                 var weatherDate = $("<h2>").text(moment(result.list[0].dt_txt).format("L"));
                 var weatherImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[0].weather[0].icon}.png`);
-                var cityNameEl = $("#cityName");
-                cityNameEl.html("")
-                cityNameEl.append(weatherDate);
-                cityNameEl.append(weatherImg);
+                var cityTopEl = $("#cityTop");
+                cityTopEl.html("")
+                cityTopEl.append(weatherDate);
+                cityTopEl.append(weatherImg);
 
                 var fiveDay = $("#5-day").addClass("container")
                 fiveDay.html("")
@@ -70,8 +70,8 @@ var historyHandler = function () {
     var historyEl = $("#history");
     historyEl.html("")
     var cityEl = $("#city")
-    var cityNameEl = $("<h2>").text(searchTerm).attr("id", "cityName");
-    cityEl.append(cityNameEl);
+    $("<div>").addClass("cityTop");
+    $("#cityName").text(searchTerm);
     var cityWeatherSpecsEl = $("<div>");
     cityWeatherSpecsEl.attr("id", "cityWeatherSpecsEl");
     cityEl.append(cityWeatherSpecsEl);
