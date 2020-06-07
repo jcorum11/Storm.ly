@@ -14,7 +14,6 @@ var weatherHandler = function () {
                 cityWeatherSpecsEl.append(cityHumidityEl)
                 var cityWindSpeedEl = $("<h3>").text(`Wind Speed: ${result.list[0].wind.speed}`);
                 cityWeatherSpecsEl.append(cityWindSpeedEl);
-                console.log(result.list[0].dt_txt);
                 var weatherDate = $("<h2>").text(moment(result.list[0].dt_txt).format("L"));
                 var weatherImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[0].weather[0].icon}.png`);
                 var cityNameEl = $("#cityName");
@@ -26,7 +25,12 @@ var weatherHandler = function () {
                 fiveDay.append(row);
                 for (var i = 0; i < 5; i++) {
                     var weatherCard = $("<div>").addClass("card col-sm-2 m-1");
-                    var weatherText = $("<div>").text("some text").addClass("card-body");
+                    var weatherCardDate = $("<div>").text(moment(result.list[i].dt_txt).format("L"));
+                    var weatherCardImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[i].weather[0].icon}.png`);
+                    var weatherCardTemp = $("<div>").text(`Temp: ${result.list[i].main.temp}`);
+                    var weatherCardHumidity = $("<div>").text(`Humidity: ${result.list[i].main.humidity}`);
+                    var weatherText = $("<div>").addClass("card-body");
+                    weatherText.append([weatherCardDate, weatherCardImg, weatherCardTemp, weatherCardHumidity]);
                     weatherCard.append(weatherText);
                     row.append(weatherCard);
                 }
@@ -64,13 +68,13 @@ $("#submit").click(function () {
     if (!historyList) {
         historyList = [];
     }
-
-    historyList.push({ name: searchTerm });
-    localStorage.setItem("historyList", JSON.stringify(historyList));
-    historyList.forEach(city => {
-        historyCityNameEl = $("<h4>").addClass("cityHistoryItem").text(city.name);
-        historyEl.append(historyCityNameEl);
-    });
-
+    if (!historyList.includes(searchTerm)) {
+        historyList.push({ name: searchTerm });
+        localStorage.setItem("historyList", JSON.stringify(historyList));
+        historyList.forEach(city => {
+            historyCityNameEl = $("<h4>").addClass("cityHistoryItem").text(city.name);
+            historyEl.append(historyCityNameEl);
+        });
+    }
     weatherHandler();
 });
