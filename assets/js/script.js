@@ -7,6 +7,7 @@ var weatherHandler = function () {
     fetch(url).then(function (response) {
         if (response.ok) {
             response.json().then(function (result) {
+                historyHandler();
                 var cityWeatherSpecsEl = $("#cityWeatherSpecsEl");
                 cityWeatherSpecsEl.html("");
                 var cityTempEl = $("<h3>").text(`Temp: ${result.list[0].main.temp}`);
@@ -55,6 +56,12 @@ var weatherHandler = function () {
                 })
             });
         }
+        else {
+            alert(`Error: ${response.statusText}`)
+        }
+    })
+    .catch(function (error) {
+        alert("unable to connect to openweathermap.org");
     })
 }
 
@@ -69,13 +76,14 @@ var historyHandler = function () {
     cityWeatherSpecsEl.attr("id", "cityWeatherSpecsEl");
     cityEl.append(cityWeatherSpecsEl);
 
-    historyList.forEach(city => {
-        historyCityNameEl = $("<h4>").addClass("cityHistoryItem").text(city.name);
-        historyEl.append(historyCityNameEl);
-    });
-
     if (!historyList) {
         historyList = [];
+    }
+    else {
+        historyList.forEach(city => {
+            historyCityNameEl = $("<h4>").addClass("cityHistoryItem").text(city.name);
+            historyEl.append(historyCityNameEl);
+        });
     }
 
     var inHistoryList = false;
@@ -96,8 +104,7 @@ historyHandler();
 
 // click event for search button
 $("#submit").click(function () {
-    if ($(this).val()) {
-        historyHandler();
+    if ($("#search").val()) {
         weatherHandler();
     }
     else {
