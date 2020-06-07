@@ -27,6 +27,15 @@ var weatherHandler = function () {
                 fetch(url).then(function (response) {
                     response.json().then(function(result) {
                         var cityUvIndexEl = $("<h3>").text(`UV Index: ${result[0].value}`);
+                        if (result[0].value < 3) {
+                            cityUvIndexEl.addClass("bg-success");
+                        }
+                        else if (result[0].value > 3 && result[0].value < 7) {
+                            cityUvIndexEl.addClass("bg-warning");
+                        }
+                        else if (result[0].value > 6) {
+                            cityUvIndexEl.addClass("bg-danger");
+                        }
                         cityWeatherSpecsEl.append(cityUvIndexEl);
                     })
                 })
