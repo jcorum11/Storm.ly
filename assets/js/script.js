@@ -33,7 +33,7 @@ var weatherHandler = function () {
                     var weatherCardImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[i].weather[0].icon}.png`);
                     var weatherCardTemp = $("<div>").text(`Temp: ${result.list[i].main.temp}`);
                     var weatherCardHumidity = $("<div>").text(`Humidity: ${result.list[i].main.humidity}`);
-                    var weatherText = $("<div>").addClass("card-body");
+                    var weatherText = $("<div>").addClass("my-2");
                     weatherText.append([weatherCardDate, weatherCardImg, weatherCardTemp, weatherCardHumidity]);
                     weatherCard.append(weatherText);
                     row.append(weatherCard);
