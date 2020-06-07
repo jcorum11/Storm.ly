@@ -28,12 +28,12 @@ var weatherHandler = function () {
                 var row = $("<div>").addClass("row");
                 fiveDay.append(row);
                 for (var i = 0; i < 5; i++) {
-                    var weatherCard = $("<div>").addClass("card col-sm-2 m-1");
+                    var weatherCard = $("<div>").addClass("card m-1").attr("style", "width: 8rem");
                     var weatherCardDate = $("<div>").text(moment(result.list[i].dt_txt).format("L"));
                     var weatherCardImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[i].weather[0].icon}.png`);
                     var weatherCardTemp = $("<div>").text(`Temp: ${Math.round(result.list[i].main.temp)}\xB0F`);
                     var weatherCardHumidity = $("<div>").text(`Humidity: ${result.list[i].main.humidity}%`);
-                    var weatherText = $("<div>").addClass("my-2");
+                    var weatherText = $("<div>").addClass("m-2");
                     weatherText.append([weatherCardDate, weatherCardImg, weatherCardTemp, weatherCardHumidity]);
                     weatherCard.append(weatherText);
                     row.append(weatherCard);
