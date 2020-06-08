@@ -18,4 +18,4 @@ Made with 😪 by Jake
 
 ### ©️2020 Storm.ly, Inc. 
 
-![Storm.ly Website](/assets/images/Storm-ly.png)
+![Storm.ly Website](/assets/images/storm-ly.png)
