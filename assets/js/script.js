@@ -120,11 +120,9 @@ var historyHandler = function () {
             inHistoryList = true
         }
     }
-
     if (!inHistoryList) {
         historyList.push({ name: searchTerm });
         localStorage.setItem("historyList", JSON.stringify(historyList));
-        
     }
 }
 // call historyHandler upon running script
