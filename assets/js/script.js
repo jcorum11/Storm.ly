@@ -88,7 +88,7 @@ var weatherDataHandler = function () {
             response.json().then(function (weatherResult) {
                 weatherCardHandler(weatherResult);
                 // api call for 6 day uv index data
-                var url = `http://api.openweathermap.org/data/2.5/uvi/forecast?appid=${apiKey}&lat=${weatherResult.city.coord.lat}&lon=${weatherResult.city.coord.lon}&cnt=5`
+                var url = `https://api.openweathermap.org/data/2.5/uvi/forecast?appid=${apiKey}&lat=${weatherResult.city.coord.lat}&lon=${weatherResult.city.coord.lon}&cnt=5`
                 fetch(url).then(function (response) {
                     response.json().then(function(uvResult) {
                         cityCardHandler(weatherResult, uvResult);
