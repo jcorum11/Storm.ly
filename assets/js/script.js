@@ -64,7 +64,7 @@ var weatherCardHandler = function (weatherResult) {
         //create new elements
         var weatherCard = $("<div>").addClass("card bg-dark text-light ").attr("style", "width: 8rem");
         var weatherCardDate = $("<div>").text(moment(weatherResult.list[i].dt_txt).format("L"));
-        var weatherCardImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${weatherResult.list[i].weather[0].icon}.png`);
+        var weatherCardImg = $("<img>").attr("src", `https://openweathermap.org/img/wn/${weatherResult.list[i].weather[0].icon}.png`);
         var weatherCardTemp = $("<div>").text(`Temp: ${Math.round(weatherResult.list[i].main.temp)}\xB0F`);
         var weatherCardHumidity = $("<div>").text(`Humidity: ${weatherResult.list[i].main.humidity}%`);
         var weatherText = $("<div>").addClass("m-2");
