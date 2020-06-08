@@ -3,11 +3,27 @@ var historyList = JSON.parse(localStorage.getItem("historyList"));
 
 var weatherHandler = function () {
     var searchTerm = $("#search").val();
-    var url = `https://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&cnt=6&appid=${apiKey}&units=imperial`;
+    var url = `https://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&cnt=6&units=imperial&appid=${apiKey}`;
     fetch(url).then(function (response) {
         if (response.ok) {
             response.json().then(function (result) {
                 historyHandler();
+                var cityCard = $("<div>").attr("id", "cityCard").addClass("card bg-dark text-light shadow")
+                var cityEl = $("<div>").attr("id", "city").addClass("card-body")
+                var cityTopEl = $("<div>").addClass("cityTop d-inline-flex").insertBefore("#5-day");;
+                var cityName = $("<h2>").attr("id", "cityName").addClass("my-2").text(searchTerm);
+                var weatherDate = $("<h2>").addClass("m-2").text(moment(result.list[0].dt_txt).format("L"));
+                var weatherImg = $("<img>").addClass("m-2").attr("src", `http://openweathermap.org/img/wn/${result.list[0].weather[0].icon}.png`);
+                cityTopEl.html("")
+                cityTopEl.append(cityName);
+                cityTopEl.append(weatherDate);
+                cityTopEl.append(weatherImg);
+                cityEl.append(cityTopEl)
+                var cityWeatherSpecsEl = $("<div>");
+                cityWeatherSpecsEl.attr("id", "cityWeatherSpecsEl");
+                cityEl.append(cityWeatherSpecsEl);
+                cityCard.append(cityEl);
+                cityCard.insertBefore("#5-day")
                 var cityWeatherSpecsEl = $("#cityWeatherSpecsEl");
                 cityWeatherSpecsEl.html("");
                 var cityTempEl = $("<h3>").text(`Temp: ${Math.round(result.list[0].main.temp)}\xB0F`);
@@ -16,19 +32,12 @@ var weatherHandler = function () {
                 cityWeatherSpecsEl.append(cityHumidityEl)
                 var cityWindSpeedEl = $("<h3>").text(`Wind Speed: ${result.list[0].wind.speed} mph`);
                 cityWeatherSpecsEl.append(cityWindSpeedEl);
-                var weatherDate = $("<h2>").text(moment(result.list[0].dt_txt).format("L"));
-                var weatherImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[0].weather[0].icon}.png`);
-                var cityTopEl = $("#cityTop");
-                cityTopEl.html("")
-                cityTopEl.append(weatherDate);
-                cityTopEl.append(weatherImg);
-
-                var fiveDay = $("#5-day").addClass("container")
+                var fiveDay = $("#5-day").addClass("d-flex justify-content-between my-4");
                 fiveDay.html("")
-                var row = $("<div>").addClass("row");
-                fiveDay.append(row);
+                // var container = $("<div>").addClass("d-inline-flex justify-content-between");
+                // fiveDay.append(container);
                 for (var i = 0; i < 5; i++) {
-                    var weatherCard = $("<div>").addClass("card m-1").attr("style", "width: 8rem");
+                    var weatherCard = $("<div>").addClass("card bg-dark text-light shadow").attr("style", "width: 8rem");
                     var weatherCardDate = $("<div>").text(moment(result.list[i].dt_txt).format("L"));
                     var weatherCardImg = $("<img>").attr("src", `http://openweathermap.org/img/wn/${result.list[i].weather[0].icon}.png`);
                     var weatherCardTemp = $("<div>").text(`Temp: ${Math.round(result.list[i].main.temp)}\xB0F`);
@@ -36,7 +45,7 @@ var weatherHandler = function () {
                     var weatherText = $("<div>").addClass("m-2");
                     weatherText.append([weatherCardDate, weatherCardImg, weatherCardTemp, weatherCardHumidity]);
                     weatherCard.append(weatherText);
-                    row.append(weatherCard);
+                    fiveDay.append(weatherCard);
                 }
                 var url = `http://api.openweathermap.org/data/2.5/uvi/forecast?appid=${apiKey}&lat=${result.city.coord.lat}&lon=${result.city.coord.lon}&cnt=5`
                 fetch(url).then(function (response) {
@@ -67,7 +76,7 @@ var weatherHandler = function () {
         }
     })
     .catch(function (error) {
-        alert("unable to connect to openweathermap.org");
+        alert("unable to connect to openweathermap.org (status 200-299)");
     })
 }
 
@@ -75,20 +84,16 @@ var historyHandler = function () {
     var searchTerm = $("#search").val();
     var historyEl = $("#history");
     historyEl.html("")
-    var cityEl = $("#city")
-    $("<div>").addClass("cityTop");
-    $("#cityName").text(searchTerm);
-    var cityWeatherSpecsEl = $("<div>");
-    cityWeatherSpecsEl.attr("id", "cityWeatherSpecsEl");
-    cityEl.append(cityWeatherSpecsEl);
 
     if (!historyList) {
         historyList = [];
     }
     else {
         historyList.forEach(city => {
-            historyCityNameEl = $("<h4>").addClass("cityHistoryItem").text(city.name);
-            historyEl.append(historyCityNameEl);
+            historyCard = $("<div>").addClass("card m-1 cityHistoryItem bg-dark text-light shadow");
+            historyCityNameEl = $("<h4>").addClass("card-body mx-1").text(city.name);
+            historyCard.append(historyCityNameEl);
+            historyEl.append(historyCard);
         });
     }
 
@@ -109,7 +114,7 @@ var historyHandler = function () {
 historyHandler();
 
 // click event for search button
-$("#submit").click(function () {
+$("#form").submit(function () {
     if ($("#search").val()) {
         weatherHandler();
     }

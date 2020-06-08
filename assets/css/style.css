@@ -5,3 +5,21 @@
 .bg-purple {
     background-color: purple
 }
+
+.bg-grey {
+    background-color: lightgrey;
+}
+
+label {
+    font-size: 1.5rem;
+}
+
+input {
+    border-radius: 8px;
+    outline: none;
+    width: 89%
+}
+
+.shadow {
+    
+}
