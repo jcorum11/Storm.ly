@@ -20,3 +20,6 @@ input {
     width: 89%
 }
 
+span {
+    border-radius: 8px;
+}

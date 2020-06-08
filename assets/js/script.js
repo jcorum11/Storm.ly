@@ -1,11 +1,18 @@
 var apiKey = "a2dfa14dde9a15c432f7f0a5cb10b4a7";
 var historyList = JSON.parse(localStorage.getItem("historyList"));
 
+// change string to title case
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
 // handlers
 // main card
 var cityCardHandler = function (weatherData, uvData) {
     // generate elements upon search
-    var searchTerm = $("#search").val();
+    var searchTerm = toTitleCase($("#search").val());
     var cityCard = $("<div>").attr("id", "cityCard").addClass("card bg-dark text-light ");
     var cityEl = $("<div>").attr("id", "city").addClass("card-body");
     var cityTopEl = $("<div>").addClass("cityTop d-inline-flex").insertBefore("#5-day").html("");;
@@ -16,7 +23,8 @@ var cityCardHandler = function (weatherData, uvData) {
     var cityTempEl = $("<h3>").text(`Temp: ${Math.round(weatherData.list[0].main.temp)}\xB0F`);
     var cityHumidityEl = $("<h3>").text(`Humidity: ${weatherData.list[0].main.humidity}%`);
     var cityWindSpeedEl = $("<h3>").text(`Wind Speed: ${weatherData.list[0].wind.speed} mph`);
-    var cityUvIndexEl = $("<h3>").text(`UV Index: ${uvData[0].value}`);
+    var cityUvIndexEl = $("<h3>").text(`UV Index:`);
+    var uvDataSpan = $("<span>").text(uvData[0].value).addClass("mx-1 px-1");
     // append new elements to containers
     cityTopEl.append(cityName);
     cityTopEl.append(weatherDate);
@@ -30,28 +38,29 @@ var cityCardHandler = function (weatherData, uvData) {
     cityWeatherSpecsEl.append(cityWindSpeedEl);
     // add uv data color depending on uv index
     if (uvData[0].value < 3) {
-        cityUvIndexEl.addClass("bg-success");
+        uvDataSpan.addClass("bg-success");
     }
     else if (uvData[0].value > 2 && uvData[0].value < 6) {
-        cityUvIndexEl.addClass("bg-warning");
+        uvDataSpan.addClass("bg-warning");
     }
     else if (uvData[0].value > 5 && uvData[0].value < 8) {
-        cityUvIndexEl.addClass("bg-orange");
+        uvDataSpan.addClass("bg-orange");
     }
     else if (uvData[0].value > 7 && uvData[0].value < 11) {
-        cityUvIndexEl.addClass("bg-danger");
+        uvDataSpan.addClass("bg-danger");
     }
     else if (uvData[0].value > 11) {
-        cityUvIndexEl.addClass("bg-purple")
+        uvDataSpan.addClass("bg-purple");
     }
     // append final card element to DOM
+    cityUvIndexEl.append(uvDataSpan);
     cityWeatherSpecsEl.append(cityUvIndexEl);
 }
 
 // 5 day forecast cards
 var weatherCardHandler = function (weatherResult) {
     var fiveDay = $("#5-day").addClass("d-flex justify-content-between my-4").html("");
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 40; i+=8) {
         //create new elements
         var weatherCard = $("<div>").addClass("card bg-dark text-light ").attr("style", "width: 8rem");
         var weatherCardDate = $("<div>").text(moment(weatherResult.list[i].dt_txt).format("L"));
@@ -68,15 +77,15 @@ var weatherCardHandler = function (weatherResult) {
 
 // api data
 var weatherDataHandler = function () {
-    var searchTerm = $("#search").val();
-    var url = `https://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&cnt=6&units=imperial&appid=${apiKey}`;
+    var searchTerm = toTitleCase($("#search").val().trim());
+    $("#cityCard").remove();
+    var url = `https://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&units=imperial&appid=${apiKey}`;
     // api call for 6 day weather data
     fetch(url).then(function (response) {
         // if call is successful then run historyHandler and hand off response to weatherCardHandler
         // then run another call for uv index data and hand both response objects to cityCardHandler
         if (response.ok) {
             response.json().then(function (weatherResult) {
-                historyHandler();
                 weatherCardHandler(weatherResult);
                 // api call for 6 day uv index data
                 var url = `http://api.openweathermap.org/data/2.5/uvi/forecast?appid=${apiKey}&lat=${weatherResult.city.coord.lat}&lon=${weatherResult.city.coord.lon}&cnt=5`
@@ -92,7 +101,7 @@ var weatherDataHandler = function () {
         }
     })
     .catch(function (error) {
-        alert("unable to connect to openweathermap.org (status 200-299)");
+        alert("unable to connect to openweathermap.org (status not 200-299)");
     })
 }
 
@@ -107,10 +116,12 @@ var historyHandler = function () {
     // if history exists will generate cards displaying search history
     else {
         historyList.forEach(city => {
-            historyCard = $("<div>").addClass("card m-1 cityHistoryItem bg-dark text-light ");
-            historyCityNameEl = $("<h4>").addClass("card-body mx-1").text(city.name);
-            historyCard.append(historyCityNameEl);
-            historyEl.append(historyCard);
+            if (city.name !== "") {
+                historyCard = $("<div>").addClass("card m-1 cityHistoryItem bg-dark text-light ");
+                historyCityNameEl = $("<h4>").addClass("card-body mx-1").text(city.name);
+                historyCard.append(historyCityNameEl);
+                historyEl.append(historyCard);
+            }
         });
     }
     // boolean to check for matching search history items
@@ -124,23 +135,24 @@ var historyHandler = function () {
         historyList.push({ name: searchTerm });
         localStorage.setItem("historyList", JSON.stringify(historyList));
     }
+    $(".cityHistoryItem").click(function (event) {
+        event.preventDefault()
+        $("#search").val($(this).text());
+        weatherDataHandler();
+    })
 }
 // call historyHandler upon running script
 historyHandler();
 
 // click events
 // search button
-$("#form").submit(function () {
+$("#form").submit(function (event) {
+    event.preventDefault()
     if ($("#search").val()) {
+        historyHandler();
         weatherDataHandler();
     }
     else {
         alert("Enter a valid city name");
     }
 });
-
-// history list
-$(".cityHistoryItem").click(function () {
-    $("#search").val($(this).text());
-    weatherDataHandler();
-})
